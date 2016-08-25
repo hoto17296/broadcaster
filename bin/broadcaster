@@ -8,11 +8,13 @@ require 'ostruct'
 require_relative '../lib/ses'
 
 interval = 0.1
+dry_run = false
 
 opt = OptionParser.new
 opt.on('-s', '--source=SOURCE_FILE') {|v| SOURCE_FILE = v }
 opt.on('-t', '--template=TEMPLATE_FILE') {|v| TEMPLATE_FILE = v }
 opt.on('-i', '--interval=INTERVAL(sec)') {|v| interval = v.to_f }
+opt.on('--dry-run') {|v| dry_run = v }
 opt.parse!(ARGV)
 exit 1 unless defined? SOURCE_FILE and defined? TEMPLATE_FILE
 
@@ -36,6 +38,6 @@ source.each do |row|
   mail.to = row[:email]
   params = OpenStruct.new(row.to_h).instance_eval {binding}
   mail.body = template.result(params)
-  mail.send
+  mail.send unless dry_run
   puts row.to_s
 end

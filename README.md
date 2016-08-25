@@ -17,6 +17,7 @@ Usage: broadcaster [options]
     -s, --source=SOURCE_FILE
     -t, --template=TEMPLATE_FILE
     -i, --interval=INTERVAL(sec)
+        --dry-run
 ```
 
 ## File format
