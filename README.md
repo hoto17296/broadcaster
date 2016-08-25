@@ -16,6 +16,7 @@ $ AWS_ACCESS_KEY_ID='XXXXXXXX' AWS_SECRET_ACCESS_KEY='XXXXXXXXXXXXXXXX' bundle e
 Usage: broadcaster [options]
     -s, --source=SOURCE_FILE
     -t, --template=TEMPLATE_FILE
+    -i, --interval=INTERVAL(sec)
 ```
 
 ## File format

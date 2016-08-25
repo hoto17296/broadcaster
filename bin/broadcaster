@@ -6,9 +6,12 @@ require 'front_matter_parser'
 require 'erb'
 require_relative '../lib/ses'
 
+interval = 0.1
+
 opt = OptionParser.new
 opt.on('-s', '--source=SOURCE_FILE') {|v| SOURCE_FILE = v }
 opt.on('-t', '--template=TEMPLATE_FILE') {|v| TEMPLATE_FILE = v }
+opt.on('-i', '--interval=INTERVAL(sec)') {|v| interval = v.to_f }
 opt.parse!(ARGV)
 exit 1 unless defined? SOURCE_FILE and defined? TEMPLATE_FILE
 
@@ -28,6 +31,7 @@ mail.subject = parsed.front_matter['subject']
 template = ERB.new parsed.content
 
 source.each do |row|
+  sleep interval
   mail.to = row[:email]
   name = row[:name]
   mail.body = template.result(binding)
