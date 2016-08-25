@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'csv'
+require 'front_matter_parser'
+require 'erb'
+require_relative '../lib/ses'
+
+opt = OptionParser.new
+opt.on('-s', '--source=SOURCE_FILE') {|v| SOURCE_FILE = v }
+opt.on('-t', '--template=TEMPLATE_FILE') {|v| TEMPLATE_FILE = v }
+opt.parse!(ARGV)
+exit 1 unless defined? SOURCE_FILE and defined? TEMPLATE_FILE
+
+source = CSV.read SOURCE_FILE,
+  col_sep: "\t",
+  headers: :first_row,
+  header_converters: :symbol,
+  skip_blanks: true
+
+mail = SES.new \
+  access_key_id: ENV['AWS_ACCESS_KEY_ID'],
+  secret_access_key: ENV['AWS_SECRET_ACCESS_KEY']
+
+parsed = FrontMatterParser.parse_file(TEMPLATE_FILE)
+mail.from = parsed.front_matter['from']
+mail.subject = parsed.front_matter['subject']
+template = ERB.new parsed.content
+
+source.each do |row|
+  mail.to = row[:email]
+  name = row[:name]
+  mail.body = template.result(binding)
+  mail.send
+end
