@@ -37,4 +37,5 @@ source.each do |row|
   params = OpenStruct.new(row.to_h).instance_eval {binding}
   mail.body = template.result(params)
   mail.send
+  puts row.to_s
 end
