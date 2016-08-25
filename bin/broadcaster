@@ -33,11 +33,15 @@ mail.from = parsed.front_matter['from']
 mail.subject = parsed.front_matter['subject']
 template = ERB.new parsed.content
 
+total = source.length
+current = 0
+
 source.each do |row|
   sleep interval
   mail.to = row[:email]
   params = OpenStruct.new(row.to_h).instance_eval {binding}
   mail.body = template.result(params)
   mail.send unless dry_run
-  puts row.to_s
+  current += 1
+  puts "(#{current}/#{total}) #{row}"
 end
