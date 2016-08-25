@@ -4,6 +4,7 @@ require 'optparse'
 require 'csv'
 require 'front_matter_parser'
 require 'erb'
+require 'ostruct'
 require_relative '../lib/ses'
 
 interval = 0.1
@@ -33,7 +34,7 @@ template = ERB.new parsed.content
 source.each do |row|
   sleep interval
   mail.to = row[:email]
-  name = row[:name]
-  mail.body = template.result(binding)
+  params = OpenStruct.new(row.to_h).instance_eval {binding}
+  mail.body = template.result(params)
   mail.send
 end
