@@ -5,6 +5,7 @@ require 'csv'
 require 'front_matter_parser'
 require 'erb'
 require 'ostruct'
+require 'benchmark'
 require_relative '../lib/ses'
 
 interval = 0.1
@@ -36,12 +37,18 @@ template = ERB.new parsed.content
 total = source.length
 current = 0
 
+times = []
+
 source.each do |row|
   sleep interval
-  mail.to = row[:email]
-  params = OpenStruct.new(row.to_h).instance_eval {binding}
-  mail.body = template.result(params)
-  mail.send unless dry_run
+  times << Benchmark.realtime do
+    mail.to = row[:email]
+    params = OpenStruct.new(row.to_h).instance_eval {binding}
+    mail.body = template.result(params)
+    mail.send unless dry_run
+  end
   current += 1
-  puts "(#{current}/#{total}) #{row}"
+  printf "%.5f (%d/%d) %s", times.last, current, total, row
 end
+
+puts "Average Time: #{times.inject(:+) / times.length}"
