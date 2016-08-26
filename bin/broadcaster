@@ -8,7 +8,7 @@ require 'ostruct'
 require 'benchmark'
 require_relative '../lib/ses'
 
-interval = 0.1
+interval = 0
 dry_run = false
 
 opt = OptionParser.new
