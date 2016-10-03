@@ -15,10 +15,12 @@ class SES
     mail.subject = @subject
     mail.body = @body
 
+    to = @to.instance_of?(Array) ? @to : @to.split(',')
+
     @client.send_email({
       source: @from,
       destination: {
-        to_addresses: [@to],
+        to_addresses: to,
       },
       message: {
         subject: {
