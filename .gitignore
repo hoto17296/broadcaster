@@ -4,3 +4,5 @@ template/*
 !template/.keep
 source/*
 !source/.keep
+config/*
+!config/*.sample

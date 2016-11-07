@@ -1,33 +1,35 @@
 #!/usr/bin/env ruby
 
+require 'yaml'
 require 'optparse'
 require 'csv'
 require 'front_matter_parser'
 require 'erb'
 require 'ostruct'
 require 'benchmark'
-require_relative '../lib/ses'
+require_relative '../lib/netsmtp'
 
 interval = 0
 dry_run = false
 
 opt = OptionParser.new
+opt.on('-c', '--config=CONFIG_FILE') {|v| CONFIG_FILE = v }
 opt.on('-s', '--source=SOURCE_FILE') {|v| SOURCE_FILE = v }
 opt.on('-t', '--template=TEMPLATE_FILE') {|v| TEMPLATE_FILE = v }
 opt.on('-i', '--interval=INTERVAL(sec)') {|v| interval = v.to_f }
 opt.on('--dry-run') {|v| dry_run = v }
 opt.parse!(ARGV)
-exit 1 unless defined? SOURCE_FILE and defined? TEMPLATE_FILE
+
+exit 1 unless defined? CONFIG_FILE and defined? SOURCE_FILE and defined? TEMPLATE_FILE
+
+config = YAML.load_file(CONFIG_FILE).map{|k,v| [k.to_sym, v] }.to_h
+mail = SMTPMail.new config
 
 source = CSV.read SOURCE_FILE,
   col_sep: "\t",
   headers: :first_row,
   header_converters: :symbol,
   skip_blanks: true
-
-mail = SES.new \
-  access_key_id: ENV['AWS_ACCESS_KEY_ID'],
-  secret_access_key: ENV['AWS_SECRET_ACCESS_KEY']
 
 parsed = FrontMatterParser.parse_file(TEMPLATE_FILE)
 mail.from = parsed.front_matter['from']

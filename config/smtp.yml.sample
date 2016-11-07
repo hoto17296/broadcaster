@@ -1,0 +1,5 @@
+domain: example.com
+port: 25
+helo_domain: mail.example.com
+account: foo
+password: bar
