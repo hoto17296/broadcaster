@@ -1,6 +1,4 @@
 # Broadcaster
-Broadcast Email from Amazon SES.
-
 ## Setup
 ```
 $ bundle install --path=vendor/bundle
@@ -8,12 +6,13 @@ $ bundle install --path=vendor/bundle
 
 ## Run
 ```
-$ AWS_ACCESS_KEY_ID='XXXXXXXX' AWS_SECRET_ACCESS_KEY='XXXXXXXXXXXXXXXX' bundle exec bin/broadcaster -s source/xxx.tsv -t template/xxx.erb
+$ bundle exec bin/broadcaster -c config/xxx.yml -s source/xxx.tsv -t template/xxx.erb
 ```
 
 ### Options
 ```
 Usage: broadcaster [options]
+    -c, --config=CONFIG_FILE
     -s, --source=SOURCE_FILE
     -t, --template=TEMPLATE_FILE
     -i, --interval=INTERVAL(sec)
@@ -21,6 +20,19 @@ Usage: broadcaster [options]
 ```
 
 ## File format
+### Config
+YAML
+
+``` yaml:source/sample.yml
+domain: example.com
+port: 25
+helo_domain: mail.example.com
+account: foo
+password: bar
+```
+
+Params are same as [Net::SMTP.start](https://docs.ruby-lang.org/ja/latest/method/Net=3a=3aSMTP/s/start.html).
+
 ### Sourse
 TSV
 
