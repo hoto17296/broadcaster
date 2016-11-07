@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'pp'
 require 'yaml'
 require 'optparse'
 require 'csv'
@@ -10,6 +11,7 @@ require 'benchmark'
 require_relative '../lib/netsmtp'
 
 interval = 0
+verbose = false
 dry_run = false
 
 opt = OptionParser.new
@@ -17,6 +19,7 @@ opt.on('-c', '--config=CONFIG_FILE') {|v| CONFIG_FILE = v }
 opt.on('-s', '--source=SOURCE_FILE') {|v| SOURCE_FILE = v }
 opt.on('-t', '--template=TEMPLATE_FILE') {|v| TEMPLATE_FILE = v }
 opt.on('-i', '--interval=INTERVAL(sec)') {|v| interval = v.to_f }
+opt.on('-v', '--verbose') {|v| verbose = v }
 opt.on('--dry-run') {|v| dry_run = v }
 opt.parse!(ARGV)
 
@@ -49,6 +52,7 @@ source.each do |row|
       params = OpenStruct.new(row.to_h).instance_eval {binding}
       mail.body = template.result(params)
       mail.send unless dry_run
+      pp mail if verbose
     end
     current += 1
     printf "%.5f (%d/%d) %s", times.last, current, total, row
